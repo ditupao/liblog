@@ -1,0 +1,6 @@
+liblog (1.0.0) unstable; urgency=low
+  * Initial release
+  * support write log to stderr/file/rsyslog
+  * support change log level and flag by change env instead of re-compile
+
+ -- gozfree <gozfree@163.com>  Mon Jun  6 11:27:37 CST 2016
