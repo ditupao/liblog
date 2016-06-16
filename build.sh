@@ -20,17 +20,25 @@ do_make()
 do_package()
 {
 	make distclean
+	rm .libs/ -fr
 	cd ../
 	if [ -f liblog_1.0.0.orig.tar.xz ]; then
 		rm liblog_1.0.0.orig.tar.xz
 	fi
-	tar -cvf liblog_1.0.0.orig.tar liblog \
+	tar -cvf liblog_1.0.1.orig.tar liblog \
 	--exclude liblog/.git \
 	--exclude liblog/.libs \
 	--exclude liblog/.deps
-	xz -z liblog_1.0.0.orig.tar
+	xz -z liblog_1.0.1.orig.tar
 	cd ${DIR}
-	dpkg-buildpackage
+	#dpkg-buildpackage
+}
+
+do_ppa()
+{
+	rm .libs/ -fr
+	dpkg-buildpackage -S
+	debuild -S -k6A210E88
 }
 
 do_build()
@@ -40,6 +48,9 @@ do_build()
 		HOST="--host=arm-linux-gnueabihf";;
 	"deb")
 		do_package;
+		exit;;
+	"ppa")
+		do_ppa;
 		exit;;
 	"help")
 		usage;

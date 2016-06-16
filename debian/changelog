@@ -1,4 +1,10 @@
-liblog (1.0.0) unstable; urgency=low
+liblog (1.0.1) xenial; urgency=medium
+
+  * 
+
+ -- gozfree <gozfree@163.com>  Fri, 17 Jun 2016 04:46:40 +0800
+
+liblog (1.0.0) xenial; urgency=low
   * Initial release
   * support write log to stderr/file/rsyslog
   * support change log level and flag by change env instead of re-compile
