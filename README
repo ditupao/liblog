@@ -23,7 +23,7 @@ For console usage, no need to rebuild for setting log level, only to set bash en
  enable timestamp
 
 ##How To Build
-  $ `sudo apt-get install automake autoconf libtool libz-dev`
+  $ `sudo apt-get install automake autoconf libtool`
 
   $ `./autogen.sh`
 

@@ -1,6 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 lib_LTLIBRARIES = liblog.la
 liblog_la_SOURCES = liblog.c
+include_HEADERS = liblog.h
 liblog_la_LDFLAGS = -version-info @lt_major@:@lt_revision@:@lt_age@
 liblog_la_CFLAGS = -Werror
 

@@ -1,0 +1,13 @@
+Source: liblog
+Section: devel
+Priority: extra
+Maintainer: gozfree <gozfree@163.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 1.0.0
+Homepage: https://github.com/gozfree/liblog.git
+
+Package: liblog
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, zlib1g
+Description: Log library
+ A simple log library, support write log to stderr, file or rsyslog.
