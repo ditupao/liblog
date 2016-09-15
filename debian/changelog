@@ -1,3 +1,10 @@
+liblog (1.0.2) xenial; urgency=medium
+
+  * fix split new log
+  * fix compile error on gcc4.6.3
+
+ -- gozfree <gozfree@163.com>  Fri, 16 Sep 2016 01:32:09 +0800
+
 liblog (1.0.1) xenial; urgency=medium
 
   * 

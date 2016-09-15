@@ -21,17 +21,19 @@ do_package()
 {
 	make distclean
 	rm .libs/ -fr
+	rm .deps/ -fr
+	rm ./debian/.debhelper/ -fr
 	cd ../
-	if [ -f liblog_1.0.0.orig.tar.xz ]; then
-		rm liblog_1.0.0.orig.tar.xz
+	if [ -f liblog_1.0.2.orig.tar.xz ]; then
+		rm liblog_1.0.2.orig.tar.xz
 	fi
-	tar -cvf liblog_1.0.1.orig.tar liblog \
+	tar -Jcvf liblog_1.0.2.orig.tar.xz liblog \
 	--exclude liblog/.git \
 	--exclude liblog/.libs \
-	--exclude liblog/.deps
-	xz -z liblog_1.0.1.orig.tar
+	--exclude liblog/.deps \
+	--exclude liblog/.pc
 	cd ${DIR}
-	#dpkg-buildpackage
+	dpkg-buildpackage
 }
 
 do_ppa()
@@ -39,6 +41,7 @@ do_ppa()
 	rm .libs/ -fr
 	dpkg-buildpackage -S
 	debuild -S -k6A210E88
+	dput ppa:gozfree/ppa ../liblog_1.0.2_source.changes
 }
 
 do_build()

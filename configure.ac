@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([liblog], [1.0.0], [gozfree@163.com])
+AC_INIT([liblog], [1.0.2], [gozfree@163.com])
 lt_major=1
 lt_revision=0
 lt_age=0
