@@ -83,7 +83,7 @@
 typedef struct log_ops {
     int (*open)(const char *path);
     ssize_t (*write)(struct iovec *vec, int n);
-    int (*close)();
+    int (*close)(void);
 } log_ops_t;
 
 typedef struct log_driver {
@@ -167,7 +167,7 @@ static unsigned long long get_file_size_by_fp(FILE *fp)
 #if defined (__ANDROID__)
 #define get_proc_name() (char *)(0)
 #else
-static char *get_proc_name()
+static char *get_proc_name(void)
 {
     int i, ret;
     char proc_name[PROC_NAME_LEN];
@@ -188,9 +188,9 @@ static char *get_proc_name()
     if (i == 0) {
         return NULL;
     }
-    proc = (char *)calloc(1, i);
+    proc = (char *)calloc(1, ret - i);
     if (proc) {
-        strncpy(proc, ptr, i);
+        strncpy(proc, ptr, ret - i);
     }
 
     return proc;
@@ -200,7 +200,7 @@ static char *get_proc_name()
 #if defined (__ANDROID__)
 #define _gettid()	(0)
 #else
-static pid_t _gettid()
+static pid_t _gettid(void)
 {
     return syscall(__NR_gettid);
 }
@@ -313,7 +313,7 @@ static int _log_fopen(const char *path)
     return 0;
 }
 
-static int _log_fclose()
+static int _log_fclose(void)
 {
     return fclose(_log_fp);
 }
@@ -321,6 +321,7 @@ static int _log_fclose()
 static ssize_t _log_fwrite(struct iovec *vec, int n)
 {
     int i, ret;
+    char log_rename[FILENAME_LEN] = {0};
     unsigned long long tmp_size = get_file_size_by_fp(_log_fp);
     if (UNLIKELY(tmp_size > _log_file_size)) {
         if (CHECK_LOG_PREFIX(_log_prefix, LOG_VERBOSE_BIT)) {
@@ -331,11 +332,15 @@ static ssize_t _log_fwrite(struct iovec *vec, int n)
             fprintf(stderr, "_log_fclose errno:%d", errno);
         }
         log_get_time(_log_name_time, sizeof(_log_name_time), 1);
-        snprintf(_log_name, sizeof(_log_name), "%s%s_%s",
+        snprintf(log_rename, sizeof(log_rename), "%s%s_%s",
                 _log_path, _log_name_prefix, _log_name_time);
+        if (-1 == rename(_log_name, log_rename)) {
+            fprintf(stderr, "log file splited %s error: %d:%s\n",
+                    log_rename, errno , strerror(errno));
+        }
         _log_fopen(_log_name);
         if (CHECK_LOG_PREFIX(_log_prefix, LOG_VERBOSE_BIT)) {
-            fprintf(stderr, "splited file %s\n", _log_name);
+            fprintf(stderr, "splited file %s\n", log_rename);
         }
     }
     for (i = 0; i < n; i++) {
@@ -365,13 +370,14 @@ static int _log_open(const char *path)
     return 0;
 }
 
-static int _log_close()
+static int _log_close(void)
 {
     return close(_log_fd);
 }
 
 static ssize_t _log_write(struct iovec *vec, int n)
 {
+    char log_rename[FILENAME_LEN] = {0};
     unsigned long long tmp_size = get_file_size(_log_name);
     if (UNLIKELY(tmp_size > _log_file_size)) {
         fprintf(stderr, "%s size= %llu reach max %llu, splited\n",
@@ -380,11 +386,14 @@ static ssize_t _log_write(struct iovec *vec, int n)
             fprintf(stderr, "_log_close errno:%d", errno);
         }
         log_get_time(_log_name_time, sizeof(_log_name_time), 1);
-        snprintf(_log_name, sizeof(_log_name), "%s%s_%s",
+        snprintf(log_rename, sizeof(log_rename), "%s%s_%s",
                 _log_path, _log_name_prefix, _log_name_time);
-
+        if (-1 == rename(_log_name, log_rename)) {
+            fprintf(stderr, "log file splited %s error: %d:%s\n",
+                    log_rename, errno , strerror(errno));
+        }
         _log_open(_log_name);
-        fprintf(stderr, "splited file %s\n", _log_name);
+        fprintf(stderr, "splited file %s\n", log_rename);
     }
 
     return writev(_log_fd, vec, n);
@@ -403,7 +412,7 @@ static struct log_ops log_io_ops = {
     .close = _log_close
 };
 
-struct log_ops *_log_handle = NULL;
+static struct log_ops *_log_handle = NULL;
 
 /*
  *time: level: process[pid]: [tid] tag: message
@@ -546,7 +555,7 @@ void log_set_level(int level)
     }
 }
 
-void log_check_env()
+static void log_check_env(void)
 {
     _log_level = LOG_LEVEL_DEFAULT;
     const char *levelstr = level_str(getenv(LOG_LEVEL_ENV));
@@ -643,7 +652,7 @@ static int log_init_stderr(const char *ident)
     return 0;
 }
 
-static void log_deinit_stderr()
+static void log_deinit_stderr(void)
 {
 }
 
@@ -714,7 +723,7 @@ static int log_init_file(const char *ident)
     return 0;
 }
 
-static void log_deinit_file()
+static void log_deinit_file(void)
 {
     _log_handle->close();
 }
@@ -735,7 +744,7 @@ static int log_init_syslog(const char *facilitiy_str)
     return 0;
 }
 
-static void log_deinit_syslog()
+static void log_deinit_syslog(void)
 {
     closelog();
 }
@@ -820,7 +829,7 @@ int log_init(int type, const char *ident)
     return 0;
 }
 
-void log_deinit()
+void log_deinit(void)
 {
     if (!_log_driver) {
         return;

@@ -1,6 +1,20 @@
-liblog (1.0.0) unstable; urgency=low
+liblog (1.0.2) xenial; urgency=medium
+
+  * fix split new log
+  * fix compile error on gcc4.6.3
+
+ -- gozfree <gozfree@163.com>  Fri, 16 Sep 2016 01:32:09 +0800
+
+liblog (1.0.1) xenial; urgency=medium
+
+  * 
+
+ -- gozfree <gozfree@163.com>  Fri, 17 Jun 2016 04:46:40 +0800
+
+liblog (1.0.0) xenial; urgency=low
   * Initial release
   * support write log to stderr/file/rsyslog
   * support change log level and flag by change env instead of re-compile
 
- -- gozfree <gozfree@163.com>  Mon Jun  6 11:27:37 CST 2016
+ -- gozfree <gozfree@163.com>  Mon, 6 Jun 2016 11:27:37 +0800
+
